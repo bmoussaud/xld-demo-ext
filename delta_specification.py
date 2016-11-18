@@ -7,7 +7,11 @@ def dump_modified_delta(delta):
     ci_descriptor = metadataService.findDescriptor(Type.valueOf(str(ci_type)))
     print ci_descriptor
     for pd in ci_descriptor.getPropertyDescriptors():
-        print "-- %s %s %s" % (pd, pd.get(delta.deployed), pd.get(delta.previous))
+        if str(pd.get(delta.deployed)) == str(pd.get(delta.previous)):
+            prefix = "  "
+        else:
+            prefix = "XX"
+        print "%s %s %s %s" % (prefix,pd, pd.get(delta.deployed), pd.get(delta.previous))
 
 
 print "-------------------------------------------------------------------------------------"
