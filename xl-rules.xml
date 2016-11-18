@@ -44,8 +44,6 @@
     </steps>
   </rule>
 
-  <disable-rule  name="docker.cannot.have.network.and.links"/>
-
 <!-- CyberArk -->
 <rule name="cyber-ark.inject.crendentials" scope="pre-plan">
   <planning-script-path>cyberark/inject.py</planning-script-path>
@@ -62,7 +60,5 @@
   </rule>
 
 <!--/Monitoring -->
-
- 
 
 </rules>
