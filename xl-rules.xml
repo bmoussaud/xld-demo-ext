@@ -8,6 +8,10 @@
     <planning-script-path>backup/cleanup-backup.py</planning-script-path>
   </rule>
 
+  <rule name="dump.DeltaSpecification" scope="plan">
+    <planning-script-path>delta_specification.py</planning-script-path>
+  </rule>
+
   <rule name="xl.DeployToProduction.checkJira" scope="pre-plan">
     <conditions>
       <expression>specification.deployedOrPreviousApplication.environment.requiresChangeTicketNumber</expression>
