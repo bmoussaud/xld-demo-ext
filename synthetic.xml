@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<synthetic xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd" xmlns="http://www.xebialabs.com/deployit/synthetic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <type-modification type="udm.Environment">
+    <property name="requiresReleaseNotes" description="Release notes are required"
+      kind="boolean" required="false" category="Deployment Checklist" />
+    <property name="requiresPerformanceTested" description="Performance testing is required"
+      kind="boolean" required="false" category="Deployment Checklist" />
+    <property name="requiresAllImagesHaveBeenSigned" description="All the Docker Images have been signed."
+      kind="boolean" required="false" category="Deployment Checklist" />
+    <property name="requiresChangeTicketNumber" description="Change ticket number authorizing deployment is required"
+      kind="boolean" required="false" category="Deployment Checklist" />
+
+  </type-modification>
+
+  <type-modification type="udm.Version">
+    <property name="satisfiesReleaseNotes" label="The development team has published the release note." description="Indicates the package contains release notes" kind="boolean" required="false" category="Deployment Checklist"/>
+    <property name="rolesReleaseNotes" kind="set_of_string" hidden="true" default="testers" />
+    <property name="satisfiesPerformanceTested" label="Are the Performance tests Ok?" description="Indicates the package has been performance tested" kind="boolean" required="false" category="Deployment Checklist"/>
+    <property name="rolesPerformanceTested" kind="set_of_string" hidden="true" default="accepters" />
+    <property name="satisfiesChangeTicketNumber" label="What is the Change Ticket number for the deployment in production" description="Indicates the change ticket number authorizing deployment to production"
+      kind="string" required="false" category="Deployment Checklist">
+      <rule type="regex" pattern="^[a-zA-Z]+-[0-9]+$" message="Ticket number should be of the form [TICK]-[number]" />
+    </property>
+    <property name="satisfiesAllImagesHaveBeenSigned" label="I've signed all the images" kind="boolean" required="false" category="Deployment Checklist"/>
+
+    <property name="rolesChangeTicketNumber" kind="set_of_string" hidden="true" default="ops" />
+  </type-modification>
+
+  <type type="app.ConfiguredLogger" extends="generic.CopiedArtifact"
+    deployable-type="app.Logger" container-type="tomcat.Server">
+    <generate-deployable type="app.Logger" extends="generic.Folder"/>
+    <property name="targetDirectory" hidden="true" default="${deployed.container.home}/config"/>
+    <property name="createTargetDirectory" hidden="true" kind="boolean" default="true"/>
+    <property name="restartRequired" kind="boolean" default="true" hidden="true"/>
+    <property name="createVerb" default="Configure" hidden="true"/>
+    <property name="destroyVerb" default="Destroy" hidden="true"/>
+  </type>
+
+  <type type="mail.SMTPServer" extends="mail.SmtpServer"/>
+
+  <type type="lb.BigIpLoadBalancer" extends="big-ip.LocalTrafficManager"/>
+
+  <type-modification type="big-ip.LocalTrafficManager">
+    <property name="removeFromLoadBalancerPoolScript" hidden="true" default="lb/remove-from-pool" />
+    <property name="returnToLoadBalancerPoolScript" hidden="true" default="lb/return-to-pool" />
+    <property name="returnToLoadBalancerPoolOrder" hidden="true" kind="integer" default="103" />
+    <property name="addToPoolOrder" hidden="true" kind="integer" default="103"/>
+  </type-modification>
+
+  <type-modification type="sql.MySqlClient">
+    <property name="mySqlHome" hidden="true" default="/usr" />
+  </type-modification>
+
+  <type type="azure.Gateway" extends="generic.Container">
+    <property name="credentialsPublishSettings" size="large"/>
+    <property name="importsettingsScript" default="azure/import-settings" hidden="true" />
+    <property name="accountsScript" default="azure/accounts" hidden="true" />
+    <method name="importsettings"/>
+    <method name="accounts"/>
+  </type>
+
+  <type type="azure.PublishedWebContent" extends="generic.ExecutedScriptWithDerivedArtifact"
+    container-type="azure.Gateway" deployable-type="iis.WebContent">
+    <property name="createScript" default="azure/deploy-website" hidden="true" />
+    <property name="createVerb" default="Deploy" hidden="true" />
+    <property name="createOrder" default="60" kind="integer" hidden="true" />
+    <property name="githubRepository"  category="github" />
+  </type>
+
+
+  <type type="azure.Website" extends="generic.ExecutedScript"
+    container-type="azure.Gateway" deployable-type="iis.WebsiteSpec">
+    <property name="location" default="West Europe"/>
+    <property name="fqdn" />
+    <property name="createScript" default="azure/create-website" hidden="true" />
+    <property name="destroyScript" default="azure/delete-website" hidden="true" />
+    <property name="githubUsername" category="github" />
+    <property name="githubPassword" password="true"  category="github"/>
+    <property name="githubRepository"  category="github" />
+  </type>
+
+  <type-modification type="tomcat.WarModule">
+    <property name="createVerb" default="Deploy" hidden="true"/>
+    <property name="destroyVerb" default="Undeploy" hidden="true"/>
+    <property name="cleanupWorkDirectory" default="false" required="false" kind="boolean" category="Cleanup" />
+  </type-modification>
+
+  <!-- xl-rules -->
+  <type-modification type="udm.DeployedApplication">
+    <property name="backupDatabase" kind="boolean" default="false" required="false" category="Backup"/>
+    <property name="cleanUpBackup" kind="boolean" default="false" required="false" category="Backup"/>
+    <property name="checkDeployedArtifacts" kind="boolean" default="false" required="false" category="Check"/>
+  </type-modification>
+
+  <type-modification type="udm.Environment">
+    <property name="backupDirectory" kind="string" default="/tmp"  category="Backup"/>
+  </type-modification>
+  <!-- /xl-rules -->
+
+  <type-modification type="overthere.CifsHost" >
+    <property name="tmpDeleteOnDisconnect" kind="boolean" default="true" hidden="false" category="Advanced"/>
+  </type-modification>
+
+  <type-modification type="overthere.SshHost" >
+    <property name="tmpDeleteOnDisconnect" kind="boolean" default="true" hidden="false" category="Advanced"/>
+  </type-modification>
+
+
+
+<!-- CyberArk -->
+  <type type="cyber-ark.SshHost" extends="overthere.SshHost">
+    <property name="vault" kind="ci" referenced-type="cyber-ark.Vault" />
+    <property name="username" required="false" hidden="true" default="XXXXX"/>
+    <property name="password" required="false" hidden="true" default="XXXXX" password="true"/>
+    <property name="privateKeyFile" required="false" hidden="true" default="XXXXX" password="true"/>
+    <property name="passphrase" required="false" hidden="true" default="XXXXX" password="true"/>
+  </type>
+
+  <type type="cyber-ark.Vault" extends="udm.BaseConfigurationItem" root="CONFIGURATION"/>
+
+  <type-modification type="cyber-ark.Vault">
+    <property name="url" description="cyber-ark URL" />
+    <property name="username" description="cyber-ark username" />
+    <property name="password" description="cyber-ark password"  password="true"/>
+  </type-modification>
+  <!-- /CyberArk -->
+
+  <type-modification type="udm.Environment">
+    <property name="enableMonitoring" kind="boolean" default="false" category="Monitoring"/>
+    <property name="monitoringURL"  label="url" required="false" category="Monitoring"/>
+    <property name="monitoringUsername" required="false" category="Monitoring"/>
+    <property name="monitoringPassword" required="false" password="true" category="Monitoring"/>
+  </type-modification>
+
+  <type-modification type="udm.Dictionary">
+    <method name="getProperties" label="Add Raw Properties.." description="Pulls dictionary values from raw properties" delegate="jythonScript"
+      script="utils/addProperties.py">
+      <parameters>
+        <parameter name="text" size="large" />
+      </parameters>
+    </method>
+  </type-modification>
+
+  <type-modification type="generic.Container">
+    <property name="envVars" label="Environment Variables" required="false"  kind="map_string_string" category="Environment"/>
+  </type-modification>
+
+ </synthetic>

@@ -1,0 +1,2 @@
+azure account list
+

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<rules xmlns="http://www.xebialabs.com/xl-deploy/xl-rules">
+
+  <rule name="xl.DeployedApplication.executeackup" scope="pre-plan">
+    <planning-script-path>backup/execute-backup.py</planning-script-path>
+  </rule>
+  <rule name="xl.DeployedApplication.cleanupBackup" scope="post-plan">
+    <planning-script-path>backup/cleanup-backup.py</planning-script-path>
+  </rule>
+
+  <rule name="xl.DeployToProduction.checkJira" scope="pre-plan">
+    <conditions>
+      <expression>specification.deployedOrPreviousApplication.environment.requiresChangeTicketNumber</expression>
+    </conditions>
+    <steps>
+      <jython>
+        <description expression="true">"Check if the [%s] Ticket is valid" % (specification.deployedOrPreviousApplication.version.satisfiesChangeTicketNumber)</description>
+        <order>10</order>
+        <script-path>jira/do-check-number.py</script-path>
+        <jython-context>
+          <jira expression="true">specification.deployedOrPreviousApplication.version.satisfiesChangeTicketNumber</jira>
+        </jython-context>
+      </jython>
+    </steps>
+  </rule>
+
+  <rule name="tomcat.CleanupTemporaryDictionary" scope="deployed">
+    <conditions>
+      <type>tomcat.WarModule</type>
+      <operation>MODIFY</operation>
+      <operation>DESTROY</operation>
+      <expression>previousDeployed.cleanupWorkDirectory</expression>
+    </conditions>
+    <steps>
+      <delete>
+        <order>69</order>
+        <description expression="true">"Cleanup Tomcat working directory for '%s'" % (previousDeployed.name)</description>
+        <target-path expression="true">"%s/work/Catalina/%s/%s" % (previousDeployed.container.server.home, previousDeployed.container.hostName, previousDeployed.name)</target-path>
+      </delete>
+      <pause>
+        <order>70</order>
+        <description expression="true">"Pause the plan after cleaninging the directory [%s]" % (previousDeployed.name)</description>
+      </pause>
+    </steps>
+  </rule>
+
+  <disable-rule  name="docker.cannot.have.network.and.links"/>
+
+<!-- CyberArk -->
+<rule name="cyber-ark.inject.crendentials" scope="pre-plan">
+  <planning-script-path>cyberark/inject.py</planning-script-path>
+</rule>
+<!-- /CyberArk -->
+
+<!-- Monitoring -->
+  <rule name="xl.DeployedApplication.monitoring_off" scope="pre-plan">
+    <planning-script-path>monitoring/off.py</planning-script-path>
+  </rule>
+
+  <rule name="xl.DeployedApplication.monitoring_on" scope="post-plan">
+    <planning-script-path>monitoring/on.py</planning-script-path>
+  </rule>
+
+<!--/Monitoring -->
+
+ 
+
+</rules>
