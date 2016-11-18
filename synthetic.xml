@@ -146,4 +146,7 @@
     <property name="envVars" label="Environment Variables" required="false"  kind="map_string_string" category="Environment"/>
   </type-modification>
 
+  <type-modification type="tomcat.VirtualHost">
+    <property name="envVars" label="Environment Variables" required="false"  kind="map_string_string" category="Environment"/>
+  </type-modification>
  </synthetic>
