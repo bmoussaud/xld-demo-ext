@@ -34,9 +34,5 @@ def generate_steps(host):
     )
 
 
-print "-----------------------------------"
-print specification
-print specification.operation
-print "-----------------------------------"
 #map(generate_steps, secured_hosts())
 
