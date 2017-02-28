@@ -11,7 +11,9 @@ def dump_modified_delta(delta):
             prefix = "  "
         else:
             prefix = "XX"
-        print "%s %s %s %s" % (prefix,pd, pd.get(delta.deployed), pd.get(delta.previous))
+        print "%s %s" % (prefix,pd)
+        print "\t%s"  % (pd.get(delta.deployed))
+        print "\t%s"  % (pd.get(delta.previous))
 
 
 print "-------------------------------------------------------------------------------------"
@@ -19,7 +21,7 @@ print "------------  DELTA SPECIFICATION ---------------------------------------
 print "-------------------------------------------------------------------------------------"
 for _delta in deltas.deltas:
     print "[%s] " % (_delta)
-    if _delta.getOperation() == Operation.MODIFY:
-        dump_modified_delta(_delta)
+    #if _delta.getOperation() == Operation.MODIFY:
+    #    dump_modified_delta(_delta)
 print "-------------------------------------------------------------------------------------"
 
