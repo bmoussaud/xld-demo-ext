@@ -107,7 +107,6 @@
   </type-modification>
 
 
-
 <!-- CyberArk -->
   <type type="cyber-ark.SshHost" extends="overthere.SshHost">
     <property name="vault" kind="ci" referenced-type="cyber-ark.Vault" />
@@ -149,4 +148,7 @@
   <type-modification type="tomcat.VirtualHost">
     <property name="envVars" label="Environment Variables" required="false"  kind="map_string_string" category="Environment"/>
   </type-modification>
+
+
+
 </synthetic>

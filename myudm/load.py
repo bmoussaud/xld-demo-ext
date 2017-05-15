@@ -25,12 +25,12 @@ def modified_delta(delta):
             prefix = "  "
         else:
             prefix = "XX"
-            modified[delta.deployed]=(pd, pd.get(delta.deployed), pd.get(delta.previous))
+            modified[delta.deployed.id]=(pd, pd.get(delta.deployed), pd.get(delta.previous))
     return modified
 
-def all_modified_deltas():
+def all_modified_deltas(deltas):
     all_modified_deltas = []
-    for _delta in deltas.deltas:
+    for _delta in deltas:
         if _delta.getOperation() == Operation.MODIFY:
             data = modified_delta(_delta)
             if len(data) > 0 :
@@ -38,14 +38,12 @@ def all_modified_deltas():
     return all_modified_deltas
 
 
-print "-------------------------------------------------------------------------------------"
-print "------------  DELTA SPECIFICATION ---------------------------------------------------"
-print "-------------------------------------------------------------------------------------"
-for _delta in deltas.deltas:
-    print "[%s] " % (_delta)
-    if _delta.getOperation() == Operation.MODIFY:
-        dump_modified_delta(_delta)
-#print "ALL -------------------------------------------------------------------------------------"
-#print all_modified_deltas()
-#print "/ALL -------------------------------------------------------------------------------------"
+
+print "**** ALL -------------------------------------------------------------------------------------"
+all =  all_modified_deltas(specification.deltas)
+print all
+context.setAttribute('myudm', all)
+print context.getAttribute('myudm')
+print "*** /ALL -------------------------------------------------------------------------------------"
+
 
