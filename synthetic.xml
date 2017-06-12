@@ -149,6 +149,19 @@
     <property name="envVars" label="Environment Variables" required="false"  kind="map_string_string" category="Environment"/>
   </type-modification>
 
+  <type type="docker.provisioner.Swarm" extends="udm.Provisioner" >
+    <property name="manager" kind="boolean" default="true" />
+    <property name="managerToken" category="output" required="false" default="EMPTY_MANAGER_TOKEN"/>
+    <property name="workerToken" category="output" required="false" default="EMPTY_WORKER_TOKEN" />
+  </type>
+
+  <type type="docker.provisioner.AppliedSwarm" extends="udm.AppliedProvisioner" deployable-type="docker.provisioner.Swarm" >
+    <property name="manager" kind="boolean" default="true" />
+    <property name="managerToken" category="output" required="false" default="EMPTY_MANAGER_TOKEN"/>
+    <property name="workerToken" category="output" required="false" default="EMPTY_WORKER_TOKEN" />
+  </type>
+
+
 
 
 </synthetic>

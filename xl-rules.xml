@@ -64,8 +64,13 @@
   </rule>
 
 <!--/Monitoring -->
- 
 
-
+<rule name="docker.swarm.provisioner.APPLY" scope="deployed">
+  <conditions>
+    <type>udm.BaseProvisioned</type>
+    <operation>CREATE</operation>
+  </conditions>
+  <planning-script-path>docker-swarm/provisioner/scripts/apply-swarm.py</planning-script-path>
+</rule>
 
 </rules>
