@@ -22,7 +22,7 @@ def swarm_first_manager_step(deployed,p):
     context.addStep(steps.os_script(
         description="(First) Configure {0} as a Swarm Manager".format(deployed.container.name),
         order=79,
-        script="docker-swarm/configure_firt_manager",
+        script="docker-swarm/configure_first_manager",
         freemarker_context={'name': deployed.name, 'target': deployed.container},
         target_host=to_host(deployed,p)))
 
